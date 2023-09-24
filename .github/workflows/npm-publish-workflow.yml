@@ -1,4 +1,4 @@
-name: build-ts-project
+name: publish-to-registry
 
 on:
   workflow_call:
@@ -11,29 +11,27 @@ on:
         required: false
         type: string
         default: https://registry.npmjs.org/
+      npmrc:
+        required: false
+        type: string
+        default: .npmrc
+    secrets:
+      token:
+        required: true
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: ${{inputs.node-version}}
           registry-url: ${{inputs.npm-registry}}
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Check linting
-        run: npm run lint
-
-      - name: Check formatting
-        run: npm run format
-
-      - name: Build
-        run: npm run build
+      - run: npm i && npm run build
+      - run: npm publish --userconfig ${{inputs.npmrc}}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.token}}
