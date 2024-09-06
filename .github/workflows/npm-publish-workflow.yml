@@ -32,6 +32,6 @@ jobs:
           node-version: ${{inputs.node-version}}
           registry-url: ${{inputs.npm-registry}}
       - run: npm i && npm run build
-      - run: npm publish --userconfig ${{inputs.npmrc}}
+      - run: npm publish --userconfig ${{inputs.npmrc}} --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.token}}
